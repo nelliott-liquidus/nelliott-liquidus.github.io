@@ -1,7 +1,0 @@
-<% _.each(_.filter(options.states, (s) => { return !s.preview }), (state) => { %>
-  <div id="<%= B.domID %>-S<%= state.id %>" class="state">
-  <% _.each(state.components, (component) => { %>
-    <%= _.find(components, (c) => { return c.get('stateID') == state.id && c.get('id') == component.id }).renderData %>
-  <% }) %>
-  </div>
-<% }) %>
