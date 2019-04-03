@@ -1,0 +1,7 @@
+<script type="text/javascript">
+  var <%= domID %>img = new Image();
+  <%= domID %>img.onload = function() {
+    $('#<%= domID %>').html('<img width="<%= options.width %>" height="<%= options.height %>" src="<%= options.imgUrl %>" />');
+  }
+  <%= domID %>img.src = '<%= options.imgUrl %>';
+</script>

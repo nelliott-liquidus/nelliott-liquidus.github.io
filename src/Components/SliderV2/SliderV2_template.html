@@ -1,0 +1,243 @@
+<style type="text/css">
+
+  #<%= domID %>slidecontainer {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    display:block;
+    left: 0;
+    text-align: center;
+  }
+
+  #<%= domID %>slidecontainer .slide {
+    position: relative;
+    float: left;
+    margin: 0;
+    padding: 0;
+    width: <%= options.width %>px;
+    height: <%= options.height %>px;
+    user-select: none;
+  }
+
+  #<%= domID %>slidecontainer .imgcontainer {
+    position: absolute;
+    left: <%= options.image.x %>px;
+    top: <%= options.image.y %>px;
+    width: <%= options.image.width %>px;
+    height: <%= options.image.height %>px;
+  }
+
+  #<%= domID %>slidecontainer .text-container {
+    position: relative;
+    left: <%= options.textContainer.x %>px;
+    top: <%= options.textContainer.y %>px;
+    width: <%= options.textContainer.width %>px;
+    height: <%= options.textContainer.height %>px;
+  }
+
+  #<%= domID %>slidecontainer .title {
+    left: <%= options.titleText.x %>px;
+    padding-top: <%= options.titleText.y %>px;
+    text-align: <%= options.titleText.alignment %>;
+    font: <%= options.titleText.font %>;
+    color: <%= options.titleText.color %>;
+    width: <%= options.titleText.width %>px;
+    height: <%= options.titleText.height %>px;
+  }
+
+  #<%= domID %>slidecontainer .deal {
+    left: <%= options.dealText.x %>px;
+    padding-top: <%= options.dealText.y %>px;
+    text-align: <%= options.dealText.alignment %>;
+    font: <%= options.dealText.font %>;
+    color: <%= options.dealText.color %>;
+    width: <%= options.dealText.width %>px;
+    height: <%= options.dealText.height %>px;
+  }
+
+  #<%= domID %>slidecontainer .title-free {
+    position: absolute;
+    left: <%= options.titleText.x %>px;
+    top: <%= options.titleText.y %>px;
+    text-align: <%= options.titleText.alignment %>;
+    font: <%= options.titleText.font %>;
+    color: <%= options.titleText.color %>;
+    width: <%= options.titleText.width %>px;
+    height: <%= options.titleText.height %>px;
+  }
+
+  #<%= domID %>slidecontainer .deal-free {
+    position: absolute;
+    left: <%= options.dealText.x %>px;
+    top: <%= options.dealText.y %>px;
+    text-align: <%= options.dealText.alignment %>;
+    font: <%= options.dealText.font %>;
+    color: <%= options.dealText.color %>;
+    width: <%= options.dealText.width %>px;
+    height: <%= options.dealText.height %>px;
+  }
+
+
+
+</style>
+
+<div id="<%= domID %>slidecontainer"></div>
+
+<script type="text/javascript">
+
+<%= domID %>CI.init = function() {
+
+  this.loadScripts([
+    "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/easing/EasePack.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TweenMax.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"
+  ]).done(function(){
+    var slideTemplate = <%= slideTemplate %>;
+    var napiData = JSON.parse(JSON.stringify(<%= B.domID %>NAPI.getNapiListingsData()));
+    var self = this;
+    var timesLooped = 1;
+    self.isOver = false;
+
+    if(<%= options.loop %> != 0) {
+      napiData.results[napiData.results.length] = napiData.results[0];
+    }
+
+    $('#<%= domID %>slidecontainer').css('width', (napiData.results.length * <%= options.width %>) + 'px');
+    _.each(napiData.results, function(r) {
+      $('#<%= domID %>slidecontainer').append(slideTemplate({
+        domID: '<%= domID %>',
+        buyOnlineLinkURL: r.buyOnlineLinkURL,
+        dealText: r.deal,
+        groupTextFields: <%= options.groupTextFields %>,
+        imgSrc: r.images[0].imageURL,
+        imgWidth: <%= options.image.width %>,
+        imgHeight: <%= options.image.height %>,
+        titleText: r.title
+      }));
+    });
+
+    var sliderX = 0;
+    var sliderWidth = (napiData.results.length - 1) * <%= options.width %>;
+    var slideWidth = <%= options.width %>;
+    var slider = $('#<%= domID %>slidecontainer');
+    var currentSlide = 0;
+
+    // track first listing
+
+    <%= B.domID %>Banner.bannerEvent({
+      eventName: 'listingShown',
+      stores: [
+        {
+          storeID: napiData.results[currentSlide].store.id,
+          listing: napiData.results[currentSlide].id
+        }
+      ]
+    });
+
+    function onLoop(){
+      if(!<%= B.domID %>Banner.paused) {
+        if(<%= options.interactionMode == 'mouseOver' %> && self.isOver || <%= options.interactionMode  == 'none' %>) {
+          var onObj = {}
+          var onProps = <%= JSON.stringify(options.onSlide) %>;
+          _.each(_.keys(onProps), function(k) {
+            onObj[k] = onProps[k];
+          })
+          var animObj = {
+            ease: <%= options.animation.ease %>,
+            onComplete: function(){
+              TweenMax.to($('#<%= domID %>slidecontainer .slide-contents')[currentSlide-1], .001, onObj)
+            }
+          };
+          var slideProps = <%= JSON.stringify(options.offSlide) %>;
+          _.each(_.keys(slideProps), function(k) {
+            animObj[k] = slideProps[k];
+          })
+          TweenMax.to($('#<%= domID %>slidecontainer .slide-contents')[currentSlide], <%= options.animation.animationTime %>, animObj);
+
+          currentSlide++;
+          var slideAnim = TweenMax.to(slider, <%= options.animation.animationTime %>, {
+            ease: <%= options.animation.ease %>,
+            left: sliderX - <%= options.width %>,
+            onComplete: function() {
+
+              // track each listing as it appears
+
+              <%= B.domID %>Banner.bannerEvent({
+                eventName: 'listingShown',
+                stores: [
+                  {
+                    storeID: napiData.results[currentSlide].store.id,
+                    listing: napiData.results[currentSlide].id
+                  }
+                ]
+              });
+
+              // wait for (itemDelay) millis to trigger next slides
+                <%= domID %>CI.looper = setTimeout(function(){
+                  sliderX = parseInt(slider.css('left'));
+                  if(sliderX <= -sliderWidth + slideWidth && timesLooped == <%= options.loop %>){
+                    <%= B.domID %>Banner.nextState();
+                  }
+                  else if(sliderX <= -sliderWidth) {  // end of slides
+                    if((<%= options.loop %> != 0 && timesLooped < <%= options.loop %>) || <%= options.loop %> == -1){
+                      sliderX = 0;
+                      currentSlide = 0;
+                      $('#<%= domID %>slidecontainer').css('left', 0);
+                      onLoop();
+                    }
+                    else {
+                      <%= B.domID %>Banner.nextState();
+                    }
+                    timesLooped++;
+                  }
+                  else {
+                    onLoop();
+                  }
+              }, <%= options.animation.itemDelay %>);
+            }
+          });
+        }
+        else {
+          TweenMax.killAll();
+          <%= domID %>CI.looper = setTimeout(onLoop, <%= options.animation.itemDelay %>);
+        }
+      }
+      else {
+        <%= domID %>CI.looper = setTimeout(onLoop, <%= options.animation.itemDelay %>);
+      }
+    }
+
+    $('#<%= domID %>').on('mouseover', function(){
+      self.isOver = true;
+    });
+    $('#<%= domID %>').on('mouseout', function(){
+      self.isOver = false;
+    });
+    <%= domID %>CI.listingClick = function(url) {
+      <%= B.domID %>Banner.bannerEvent({
+        eventName: 'listingClick',
+        url: url,
+        stores: [
+          {
+            storeID: napiData.results[currentSlide].store.id,
+            listing: napiData.results[currentSlide].id
+          }
+        ]
+      });
+      this.clickThru(url);
+    }
+    var initialTimeout = <%= options.animation.itemDelay %>;
+    if(<%= B.domID %>Banner.options.states[<%= options.stateID %>].transitions.in) {
+      initialTimeout += <%= B.domID %>Banner.options.states[<%= options.stateID %>].transitions.in.duration;
+    }
+    <%= domID %>CI.looper = setTimeout(onLoop, initialTimeout);
+  });
+}
+
+<%= domID %>CI.destroy = function() {
+  clearTimeout(<%= domID %>CI.looper);
+  TweenMax.killAll();
+  delete <%= domID %>CI;
+}
+
+</script>

@@ -1,0 +1,43 @@
+#headerlogo {
+  position:relative;
+  display:inline-block;
+  margin: 10px 0 20px -3px;
+  height: 60px;
+  padding:0 20px 0 0;
+  cursor:pointer;
+}
+
+#headerlogo i {
+  position: absolute;
+  z-index: 1;
+}
+
+sup {
+  color: #0DD;
+  font-size: SMALL;
+  vertical-align: 12px;
+  margin: 0 0 0 -4px;
+}
+
+#logob {
+  font-size: 86px;
+}
+
+#linklogo {
+  position: relative;
+  left: 30px;
+  top: -30px;
+  color: #06AED5;
+  font-size: 3.2em;
+  z-index: 1;
+}
+
+#bannerlink-logotext {
+  position:relative;
+  top: 50px;
+  padding: 0 0 0 5px;
+  font-size: 1.5em;
+  margin: -10px 0 0 0;
+  color: #FFF;
+  z-index: 40;
+}

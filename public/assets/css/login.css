@@ -1,0 +1,7 @@
+#login-page label {
+  display:block;
+}
+#login-page input {
+  display:block;
+  margin:2px 0 5px 0;
+}

@@ -1,0 +1,185 @@
+<style>
+  .<%= domID %>arrow {
+    background-color: #000;
+    padding: 4px;
+    color: #FFF;
+    user-select: none;
+    cursor: pointer;
+    position: absolute;
+    z-index: 9999;
+  }
+  #<%= domID %>slidecontainer {
+  }
+  #<%= domID %>slidecontainer .slide {
+    color: #000;
+    position: absolute;
+    width: 120px;
+    height: 150px;
+    transform-origin: center center;
+    transform: translate(-60px, 60px);
+    text-align: center;
+    user-select:none;
+    background-color: #FFF;
+  }
+
+  #<%= domID %>slidecontainer .imgcontainer {
+    position: absolute;
+    left: <%= options.image.x %>px;
+    top: <%= options.image.y %>px;
+    width: <%= options.image.width %>px;
+    height: <%= options.image.height %>px;
+
+  }
+
+  #<%= domID %>slidecontainer .title {
+    position: absolute;
+    left: <%= options.titleText.x %>px;
+    top: <%= options.titleText.y %>px;
+    text-align: <%= options.titleText.alignment %>;
+    font: <%= options.titleText.font %>;
+    color: <%= options.titleText.color %>;
+    width: <%= options.titleText.width %>px;
+    height: <%= options.titleText.height %>px;
+  }
+
+  #<%= domID %>slidecontainer .deal {
+    position: absolute;
+    left: <%= options.dealText.x %>px;
+    top: <%= options.dealText.y %>px;
+    text-align: <%= options.dealText.alignment %>;
+    font: <%= options.dealText.font %>;
+    color: <%= options.dealText.color %>;
+    width: <%= options.dealText.width %>px;
+    height: <%= options.dealText.height %>px;
+  }
+</style>
+<div id="<%= domID %>arrowcontainer">
+  <div style="left: 10px; top: 100px;" class="<%= domID %>arrow" id="<%= domID %>arrowleft">LEFT</div>
+  <div style="left: 550px; top: 100px;" class="<%= domID %>arrow" id="<%= domID %>arrowright">RIGHT</div>
+</div>
+<div id="<%= domID %>slidecontainer">
+
+</div>
+
+<script type="text/javascript">
+<%= domID %>CI.init = function() {
+  var self = this;
+  
+  this.loadScripts([
+    "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/easing/EasePack.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TweenMax.min.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"
+  ]).done(function(){
+    var napiData = JSON.parse(JSON.stringify(<%= B.domID %>NAPI.getNapiListingsData()));
+    var currentSlide = 0;
+    var cardTemplate = <%= cardTemplate %>;
+    var radius = <%= options.width / 2 %>;
+
+    // track first listing
+    <%= B.domID %>Banner.bannerEvent({
+      eventName: 'listingShown',
+      stores: [
+        {
+          storeID: napiData.results[currentSlide].store.id,
+          listing: napiData.results[currentSlide].id
+        }
+      ]
+    });
+
+    _.each(napiData.results, function(r) {
+      var el = cardTemplate({
+        domID: '<%= domID %>',
+        buyOnlineLinkURL: r.buyOnlineLinkURL,
+        imgWidth: <%= options.image.width %>,
+        imgHeight: <%= options.image.height %>,
+        dealText: r.deal,
+        imgSrc: r.images[0].imageURL,
+        titleText: r.title
+      });
+      $('#<%= domID %>slidecontainer').append($(el));
+
+
+      currentSlide++;
+    });
+
+    currentSlide = 0;
+    nextSlide();
+    function nextSlide(){
+      currentSlide--;
+      animate();
+    }
+    function prevSlide(){
+      currentSlide++;
+      animate();
+    }
+
+    function animate(){
+
+      if(currentSlide >= napiData.results.length) {
+        currentSlide = 0;
+      }
+      if(currentSlide < 0) {
+        currentSlide = napiData.results.length - 1;
+      }
+      <%= B.domID %>Banner.bannerEvent({
+        eventName: 'listingShown',
+        stores: [
+          {
+            storeID: napiData.results[currentSlide].store.id,
+            listing: napiData.results[currentSlide].id
+          }
+        ]
+      });
+      var index = currentSlide;
+      var spot;
+      _.each($('#<%= domID %>slidecontainer .slide'), function(r) {
+        spot = index / napiData.results.length;
+        TweenMax.to(r, .5, {
+          left: radius + (Math.sin(spot * Math.PI * 2) * radius * 1.2),
+          top: ((Math.cos(spot * Math.PI * 2) + 1) / 2) * 1.6,
+          scale: ((Math.cos(spot * Math.PI * 2) + 1) / 2) * 1.6,
+          zIndex: Math.round((parseFloat(Math.cos(spot * Math.PI * 2) + 1))) * 100,
+          opacity: Math.round((parseFloat(Math.cos(spot * Math.PI * 2) + 1)) / 3),
+          ease: 'Power2.easeOut'
+        });
+        index++;
+        if(index >= napiData.results.length) {
+          index = 0;
+        }
+        if(index < 0) {
+          index = napiData.results.length - 1;
+        }
+      })
+    }
+    <%= domID %>CI.autoSlider = setInterval(nextSlide, 2000);
+    $('#<%= domID %>arrowleft').click(function(){clearInterval(self.autoSlider); nextSlide();});
+    $('#<%= domID %>arrowright').click(function(){clearInterval(self.autoSlider); prevSlide();});
+    $('#<%= domID %>').on('mouseover', function(){
+      self.isOver = true;
+    });
+    $('#<%= domID %>').on('mouseout', function(){
+      self.isOver = false;
+    });
+    <%= domID %>CI.listingClick = function(url) {
+      <%= B.domID %>Banner.bannerEvent({
+        eventName: 'listingClick',
+        url: url,
+        stores: [
+          {
+            storeID: napiData.results[currentSlide].store.id,
+            listing: napiData.results[currentSlide].id
+          }
+        ]
+      });
+      window.open(url, '_blank');
+    }
+
+  });
+}
+  <%= domID %>CI.destroy = function() {
+
+    clearInterval(<%= domID %>CI.autoSlider);
+    TweenMax.killAll();
+    delete <%= domID %>CI;
+  }
+</script>

@@ -1,0 +1,101 @@
+label {
+  color: #FFF;
+  font-size: 12px;
+  vertical-align: 3px;
+}
+
+.inputpair {
+  display: block;
+  margin: 5px 0;
+}
+
+.inputpair label {
+  display: block;
+  margin: 0 0 4px 0;
+}
+
+.inputpair input, .inputpair select {
+  margin: 0 0 6px 0;
+}
+
+input {
+  vertical-align: 2px;
+}
+
+input[type='checkbox'] {
+  display: inline-block !important;
+}
+
+input, select {
+  border: none;
+  box-shadow: none;
+
+  font-family: 'regular-bookweb';
+  font-size: 16px;
+  background-color: #003A57;
+  padding: 4px;
+  border-radius: 4px;
+  color: #0EE;
+  outline: none;
+
+}
+
+select {
+  font-size: 18px;
+}
+
+button {
+	background-color:#003A57;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+  border: none;
+	display:block;
+	cursor:pointer;
+	color:#0EE;
+	font-family: 'regular-bookweb';
+	font-size:18px;
+	padding: 4px 7px;
+  margin: 2px 0;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #2f6627;
+}
+
+button:hover {
+	background-color:#0EE;
+  color: #055;
+}
+
+button:active {
+	position:relative;
+	top:1px;
+}
+
+input::selection{
+  color: #000;
+  background-color: #0EE;
+}
+
+.biginput {
+  padding: 4px 4px 4px 8px;
+  display:block;
+  font-size: 26px;
+}
+
+.options {
+  display: none;
+  font-family: 'Gotham_BookRegular';
+}
+
+.option {
+  font-weight: normal;
+  font-size: 14px;
+  color: #EAE2B7;
+  padding: 0 0 0 20px;
+  margin: 5px 0;
+}
+
+.optionvalue {
+  font-weight: normal;
+  color: #AAEEFF;
+}

@@ -1,0 +1,11 @@
+<div data-expandable="{{ isExpandable this}}" data-size="{{this.width}}x{{this.height}}"link="/preset/{{this._id}}" class="bannerlist-item scrollbar">
+  <div class="bannerlist-topinfo"><span class="bannerlist-dimensions">{{this.width}}x{{this.height}}</span> {{{ getExpandableSpan this }}}</div>
+  <div class="bannerblock-content">
+    <div class="bannerlist-name">{{this.name}}</div>
+    <div class="bannerlist-description">{{this.description}}</div>
+    <div class="image-previews">
+      {{{getImagePreviews this}}}
+    </div>
+  </div>
+  <div class="bannerlist-timestamp">{{getMongoTimestamp this._id}}</div>
+</div>

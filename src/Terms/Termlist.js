@@ -1,0 +1,32 @@
+const Termlist = {
+  components: 'Array of component objects belonging to a state.',
+  transitions: 'Describes how a scene transitions in and out, and whether or not to automatically go to the next state after a defined period of time.',
+  x: 'X position of an element.',
+  y: 'Y position of an element.',
+  width: 'Width of an element.',
+  height: 'Height of an element.',
+  clickAction: 'What to do when the component is clicked.',
+  clickThruURL: 'URL to navigate to upon click thru.',
+  interactionMode: 'How the slider should respond to user interaction.',
+  loop: 'How many times to loop the slider, -1 for infinite 0 for none.',
+  imgUrl: 'URL of an image asset.',
+  groupTextFields: 'If true, disables absolute positioning of deal and title text',
+  videoUrl: 'URL of a video asset.',
+  animation: 'Has nested properties to describe an animation.',
+  itemDelay: 'How much time to sit on a listing before animating to the next slide',
+  animationTime: 'Duration of a slide animation.',
+  image: 'Has nested properties to describe the display of a slider image.',
+  titleText: 'Formatting for the title of a listing.',
+  dealText: 'Formatting for the deal text of a listing.',
+  font: 'Standard CSS syntax to describe font formatting.',
+  color: 'Hex code representing an RGB value.',
+  autoSlide: 'Will animate without user input if true.',
+  userSelect: 'Standard CSS syntax for user-select, allows/prevents user from selecting text.',
+  backgroundImage: 'Image to be used as the background of a component.',
+  backgroundColor: 'Background color for a component.',
+  numProducts: 'Number of products to show in a slider.',
+  buttonStyle: 'CSS style for the off state',
+  buttonOverStyle: 'CSS style for the over state'
+}
+
+export { Termlist }

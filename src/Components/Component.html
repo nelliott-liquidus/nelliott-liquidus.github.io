@@ -1,0 +1,102 @@
+<style type="text/css">
+  #<%= domID %> {
+    <% if(!options.backgroundImage =="") { %>
+      background:url('<%= options.backgroundImage %>');
+    <% } %>
+    <% if(options.backgroundColor != '') { %>
+      background-color: <%= options.backgroundColor %>;
+    <% } %>
+
+    position: absolute;
+    z-index: <%= (options.stateID + 1) * 10 %><%= options.id %>;
+    left: <%= options.x %>px;
+    top: <%= options.y %>px;
+    width: <%= options.width || B.options.width %>px;
+    height: <%= options.height || B.options.height %>px;
+  }
+  .<%= domID %>pointer {
+    cursor: pointer;
+  }
+
+</style>
+
+<script type="text/javascript">
+ function <%= domID %>component(){
+    this.domID = '<%= domID %>';
+    this.paused = false;
+    this.init =  function() {
+    }
+
+    this.reinit = function() {
+
+    }
+
+    this.destroy = function() {
+      delete <%= domID %>CI;
+    }
+
+    this.loadScripts = function(arr) {
+      var promiseArr = new Array();
+      for(var i of arr) {
+        if(!<%= B.domID %>Banner.hasScript(i)){
+          promiseArr.push($.getScript(i))
+        }
+      }
+      promiseArr.push($.Deferred(function( deferred ){
+          $( deferred.resolve );
+      }));
+      return $.when.apply($, promiseArr);
+    }
+
+    this.clickThru = function(url, type) {
+      if(type) {
+        <%= B.domID %>Banner.bannerEvent({
+          eventName: type,
+          url: url
+        });
+      }
+      window.open(url, '_blank');
+    }
+
+    this.doAction = function(action) {
+      console.log();
+      var url = "<%= options.clickThruURL %>";
+      switch(action) {
+        case "nextState":
+          <%= B.domID %>Banner.nextState();
+          break;
+        case "prevState":
+          <%= B.domID %>Banner.prevState();
+          break;
+        case "clickThru":
+          this.clickThru('<%= options.clickThruURL %>')
+          break;
+        case "companyClick":
+          this.clickThru('<%= options.clickThruURL %>', 'companyClick')
+          break;
+      }
+    }
+
+}
+
+  var <%= domID %>CI = new <%= domID %>component();
+  $('#<%= domID %>').click(function() {
+    <%= domID %>CI.doAction('<%= options.clickAction %>');
+  })
+  $('#<%= domID %>').hover(
+    function(e) {
+      <%= domID %>CI.doAction('<%= options.rolloverAction %>');
+    },
+    function(e) {
+      <%= domID %>CI.doAction('<%= options.rolloutAction %>');
+    }
+  );
+</script>
+
+<% if(options.clickAction) { %>
+<div id="<%= domID %>" class="<%= domID %>pointer">
+<% } else { %>
+<div id="<%= domID %>">
+<% } %>
+  <%= componentHTML %>
+</div>

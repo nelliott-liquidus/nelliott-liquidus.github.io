@@ -1,0 +1,33 @@
+<link href="/public/assets/css/login.css" rel="stylesheet" type="text/css">
+
+<div id="login-page">
+  <h2>Login</h2>
+  <form id="loginform" action="/presets">
+    <div class="container">
+      <label for="username"><b>Username</b></label>
+      <input type="text" placeholder="Enter Username" name="username" id="username">
+      <br />
+      <label for="password"><b>Password</b></label>
+      <input type="password" placeholder="Enter Password" name="password" id="password">
+      <br />
+      <input type="checkbox" checked="checked" name="remember"> <label style="display:inline-block;" for="remember">Remember me</label>
+    </div>
+    <button id="login-btn" type="button" value="Go">Login</button>
+    <div class="container">
+      <span>Forgot <a href="#">password?</a></span>
+    </div>
+  </form>
+</div>
+
+<script type="text/javascript">
+$('#login-btn').click(function(){
+  $.post('/login', {
+    username: $('#username').val(),
+    password: $('#password').val()
+  }, function(d) {
+    if(!d.statusCode){
+      window.location = '/presets';
+    }
+  })
+})
+</script>

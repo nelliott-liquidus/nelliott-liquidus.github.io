@@ -1,0 +1,237 @@
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.6.1/Sortable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.min.js"></script>
+<link href="/public/assets/css/editor.css" rel="stylesheet" type="text/css">
+
+<style type="text/css">
+.rendered-banner {
+  width:{{ B.options.width }}px;
+  height:{{ B.options.height }}px;
+  overflow: hidden;
+  border: solid 1px #333;
+  margin: 0 20px 0 0;
+}
+
+.preview-wrapper {
+  display: block;
+}
+</style>
+<div id="banner-editor">
+  <div id="all-components" class="panel">
+    <h3>All Components</h3>
+    {{#each componentsRaw}}
+      <div class="component" data-id="{{@key}}" >{{@key}}</div>
+    {{/each}}
+  </div>
+  <div id="banner-header">
+    <h2>Banner Editor</h2>
+  </div>
+  <div id="banner-props" class="panel">
+    <h3><i class="fas fa-globe-americas"></i> Banner Properties</h3>
+    <label>Banner Name</label>
+    <input class="biginput" id="bannername" size="32" value="{{get B 'name'}}" />
+    <br />
+    <label>Initial Dimensions</label><div class="dimensions"> <input size="3" value="{{ B.options.initWidth }}" /> px &times; <input size="3" value="{{ B.options.initHeight }}" /> px</div>
+    <br />
+    <label>Expanded Dimensions</label><div class="dimensions"> <input size="3" value="{{ B.options.width }}" /> px &times; <input size="3" value="{{ B.options.height }}" /> px</div>
+    <br />
+    <div class="inputpair">
+      <label for="companyURL">Company URL</label>
+      <input name="companyURL" value="{{ get B 'companyURL' }}" />
+    </div>
+    <div class="inputpair">
+      <label for="fallbackURL">Fallback Image</label>
+      <input name="fallbackURL" value="{{ get B 'fallbackImage' }}" />
+    </div>
+    <img width="50" src="{{ get B 'fallbackImage' }}" />
+
+  </div>
+  <div id="services" class="panel">
+    <h3><i class="fas fa-cogs"></i> Services</h3>
+    {{#each B.options.services}}
+      <div class="service">
+        <div class="component" data-id="{{@key}}" >{{this.name}}</div>
+        {{#each this.options}}
+        <div class="inputpair">
+          <label for="{{@key}}">{{@key}}</label>
+          <input name="{{@key}}" value="{{ this }}" />
+        </div>
+        {{/each}}
+      </div>
+    {{/each}}
+  </div>
+  <br />
+
+  <div class="preview-wrapper">
+    <div class="rendered-banner">
+      <script type="text/javascript">
+      var liqBanner = {
+        bannerID: '{{bannerID}}',
+        tag: {
+          id: {{get B 'id_counter'}},
+          tagName: 'tagname',
+        },
+        cacheBuster: '',
+        expandDirection: 7,
+        clickTag: 'https://clicktagtracker.com/?url=',
+        mediaMacro: 'PREVIEW'
+      };
+      </script>
+      <script type="text/javascript" src="/public/js/wombat.js" ></script>
+    </div>
+  </div>
+  <br />
+  <div id="banner-states" class="panel">
+    <h3>States</h3>
+    <div style="display:none;" id="newstate">
+      +
+    </div>
+    <div id="state-list">
+      {{#each B.options.states}}
+        <div data-id="{{ counter @index }}" class="state-item">
+          {{this.name}}
+          <div class="arrow"><i class="fas fa-caret-down"></i></div>
+        </div>
+      {{/each}}
+    </div>
+    <div id="state-quicksettings"></div>
+    <div id="state-components"></div>
+    <div id="advanced-toggle" style="display:none;">
+      <span id="advanced-btn">+Advanced</span>
+      <span style="display: none;" id="quick-btn">+Quick</span>
+    </div>
+  </div>
+  <br />
+  <div id="save-banner" class="green-btn">SAVE</div>
+  <div id="savepreset-banner" class="green-btn">SAVE AS PRESET</div>
+</div>
+
+<script type="text/javascript">
+  var bannerData = {{{ bannerData }}};
+  function populateStateComponents(state){
+    var components = {{{ components }}};
+    console.log(components);
+    $('#state-quicksettings').html('<label>State name</label><input class="biginput" id="bannername" size="32" value="' + state.name + '" /><br /><h3>Components: Quick Settings</h3><div class="paramcontainer"></div>');
+    $('#state-components').html('<label>State name</label><input class="biginput" id="bannername" size="32" value="' + state.name + '" /><br /><h3>Components: Advanced Settings</h3><div class="paramcontainer"></div>');
+    for(var i = 0; i < state.components.length; i++){
+      $('#state-components .paramcontainer').append('<div class="component"><i class="fas fa-plug"></i> ' + state.components[i].name + '</div>')
+      $('#state-quicksettings .paramcontainer').append('<div class="component"><i class="fas fa-plug"></i> ' + state.components[i].name + '</div>')
+      _.each(_.keys(components[state.components[i].name].defaults), function(k) {
+          if(k != 'id' && k != 'stateID'){
+            var val = state.components[i].options[k] || components[state.components[i].name].defaults[k];
+            if(_.isObject(val)){
+              $('#state-components .paramcontainer').append('<div class="obj"><h3><i class="fas fa-server"></i> ' + k + '</h3></div>');
+              _.each(_.keys(val), function(k2) {
+                $('#state-components .paramcontainer .obj').last().append('<div class="inputpair"><label>' + k2 + '</label><input value="' + val[k2] + '" /></div>');
+              })
+              if(_.indexOf(components[state.components[i].name].quickSettings, k) > -1) {
+                $('#state-quicksettings .paramcontainer').append('<div class="obj"><h3><i class="fas fa-server"></i> ' + k + '</h3></div>');
+                _.each(_.keys(val), function(k2) {
+                  $('#state-quicksettings .paramcontainer .obj').last().append('<div class="inputpair"><label>' + k2 + '</label><input value="' + val[k2] + '" /></div>');
+                })
+              }
+            }
+            else{
+              $('#state-components .paramcontainer').append('<div class="inputpair"><label>' + k + '</label><input value="' + val + '" /></div>');
+              if(_.indexOf(components[state.components[i].name].quickSettings, k) > -1) {
+                $('#state-quicksettings .paramcontainer').append('<div class="inputpair"><label>' + k + '</label><input value="' + val + '" /></div>');
+              }
+            }
+          }
+      });
+    }
+    //$('#state-components').append('<div>New +</div>')
+  }
+  $(function() {
+    var el = document.getElementById('state-list');
+    var sortable = Sortable.create(el, {
+      axis: 'x',
+      draggable: '.state-item',
+      dragClass: 'state-drag',
+      chosenClass: 'state-chosen',
+      ghostClass: 'state-ghost',
+      onChoose: function (e) {
+        $('#advanced-toggle').css('display', 'inline-block');
+        populateStateComponents(bannerData.states[$(e.item).attr('data-id')]);
+        $('.selectedstate').removeClass('selectedstate');
+        $(e.item).addClass('selectedstate');
+    	},
+      onEnd: function(e){
+
+      },
+      animation: 400
+
+    });
+    $('.state-item').first().addClass('selectedstate');
+    populateStateComponents(bannerData.states[0]);
+    $('#advanced-toggle').click(function(e) {
+      $('#state-components').toggle();
+      $('#state-quicksettings').toggle();
+      $('#advanced-btn').toggle();
+      $('#quick-btn').toggle();
+    });
+    $('#bannername').change(function(e) {
+      bannerData.name = $(e.currentTarget).val()
+    });
+
+    $('#banner-dimensions').children().find('.form-save').click(function(e) {
+      console.log('bannerdim save');
+    });
+
+    $('.form-noneditable').click(function(e) {
+      $(e.currentTarget).hide();
+      $(e.currentTarget).parent().find('.form-editable').show();
+    });
+
+    $('.form-save').click(function(e) {
+      console.log('save');
+      $(e.currentTarget).parents().find('.form-noneditable').show();
+      $(e.currentTarget).parent().hide();
+    });
+
+    $('#save-banner').click(function(e) {
+      bannerData.states[0].components[1].options.text = 'test';
+      $.ajax({
+        type: "POST",
+        url: '/banner/{{ bannerID }}',
+        data: JSON.stringify(bannerData),
+        success: function(e) {
+          console.log('success');
+          location.reload();
+        },
+        error: function(e) { console.log('err', e) },
+        contentType: 'application/json'
+      });
+    })
+
+    $('#savepreset-banner').click(function(e) {
+      console.log('save preset');
+      console.log(bannerData)
+      $.ajax({
+        type: "POST",
+        url: '/preset',
+        data: JSON.stringify(bannerData),
+        success: function(e) {
+          console.log('success');
+          window.location = '/presets';
+        },
+        error: function(e) { console.log('err', e) },
+        contentType: 'application/json'
+      });
+    })
+
+
+    /*
+    $('#save-banner').click(function(e) {
+      $.ajax({
+        type: "POST",
+        url: '/banner',
+        data: '<%= JSON.stringify(B.options) %>',
+        success: function(e) { window.location.replace('/banner/<%= B.get('id') %>') },
+        error: function(e) { console.log('err', e) },
+        contentType: 'application/json',
+      });
+    })
+    */
+  });
+</script>

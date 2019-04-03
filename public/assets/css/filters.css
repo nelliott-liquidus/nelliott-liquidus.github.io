@@ -1,0 +1,24 @@
+#banner-filters {
+  margin: 0 0 30px 0;
+  padding: 0 0 20px 0;
+  border-bottom: dotted 1px #FF0;
+}
+.filterblock {
+  display: inline-block;
+  min-width: 140px;
+  vertical-align: top;
+  padding: 5px;
+  border-radius: 4px;
+  border: solid 1px #0EE;
+  margin: 0 5px 5px 0;
+}
+.filterblock h4 {
+  color: #AF329E;
+  margin: 0 0 5px 0;
+}
+.filter-checkbox {
+  font-size: 11px;
+}
+.filter-checkbox input {
+  vertical-align: -3px;
+}

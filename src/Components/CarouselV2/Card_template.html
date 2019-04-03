@@ -1,0 +1,28 @@
+<% if( buyOnlineLinkURL) { %>
+<div style="cursor: pointer;" class="slide" onclick="<%= domID %>CI.listingClick('<%= buyOnlineLinkURL %>')">
+<% } else { %>
+<div class="slide">
+<% } %>
+  <div class="slide-contents">
+    <% if(groupTextFields) { %>
+    <div class="text-container">
+      <div class="deal">
+        <%= dealText %>
+      </div>
+      <div class="title">
+        <%= titleText %>
+      </div>
+    </div>
+    <% } else { %>
+      <div class="deal-free">
+        <%= dealText %>
+      </div>
+      <div class="title-free">
+        <%= titleText %>
+      </div>
+    <% } %>
+    <div class="imgcontainer">
+      <img src="<%= imgSrc %>" width="<%= imgWidth %>" />
+    </div>
+  </div>
+</div>

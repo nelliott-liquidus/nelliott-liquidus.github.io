@@ -1,0 +1,78 @@
+<script type="text/javascript">
+  var <%= B.domID %>Liquidus = {
+    options: <%= JSON.stringify(options) %>,
+    trackingMap: <%= JSON.stringify(trackingMap) %>,
+    clickTags: function(){
+      return {
+        lotame: {
+          format: function(base, clickurl){
+            return base + 'url=' + clickurl
+          }
+        }
+      }
+    },
+    init: function() {
+
+    },
+    track(e){
+      var url = this.options.trackingBaseURL.toString() + '<%= B.options.id_counter %>' + '/' + <%= B.domID %>Banner.tag.tagName + '/' + Date.now().toString() + '/' + <%= B.domID %>Banner.sessionID + '/' + <%= B.domID %>Banner.mediaMacro;
+      if(e.eventName == 'impression'){
+        url += '.spmi';
+        this.doTrack(url);
+      }
+      else if(this.trackingMap[e.eventName]) {
+        url += '/' + this.trackingMap[e.eventName].id + '/';
+        var val1 = 1; // default
+        switch(e.eventName) {
+          case 'listingShown':
+            val1 = e.stores[0].listing;
+            break;
+          case 'companyClick':
+            val1 = 'company';
+            break;
+            case 'listingClick':
+              val1 = 'listing/' + e.stores[0].listing;
+              break;
+        }
+        url += val1;
+        url += '.stni';
+        this.doTrack(url);
+        if(this.trackingMap[e.eventName].id == 100){
+          $('#<%= B.domID %>CLICKTAGS').html('');
+          for(var i = 0; i < <%= B.domID %>Banner.clickTags.length; i++){
+            var ct = <%= B.domID %>Banner.clickTags[i];
+            var src = this.clickTags()[ct.type].format(ct.url, e.url)
+            document.dispatchEvent(new CustomEvent('track', {
+              detail: {
+                service: 'CLICKTAG (' + ct.type + ')',
+                track_url: src
+              }
+            }))
+            $('#<%= B.domID %>CLICKTAGS').append('<img style="display:none" src="' + src + '" />');
+          }
+
+
+        }
+      }
+    },
+    doTrack(u) {
+      u += '?cb=' + parseInt(Math.random() * 999999);
+      //console.log('LIQUIDUS TRACKING CALL: ' + u);
+      var te = new CustomEvent('track', {
+        detail: {
+          service: 'Liquidus',
+          track_url: u
+        }
+      });
+      document.dispatchEvent(te);
+      $('#<%= B.domID %>LIQUIDUSPIXEL').attr('src', u);
+    },
+    destroy: function(){
+      delete this;
+    }
+  };
+</script>
+
+<img id="<%= B.domID %>LIQUIDUSPIXEL" style="display:none" src="" />
+<div id="<%= B.domID %>CLICKTAGS">
+</div>

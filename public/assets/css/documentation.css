@@ -1,0 +1,66 @@
+#documentation {
+  margin: 0px 0 0 0;
+  padding: 0 0 0 15px;
+}
+
+#documentation .item {
+  color: #FFF;
+  display: block;
+}
+
+#documentation .title {
+  font-weight: bold;
+  font-size: 18px;
+  color: #A2EF07;
+  cursor: pointer;
+  margin: 0 0 5px 0;
+}
+
+#documentation .props {
+  display: none;
+  margin: 5px 0 5px 7px;
+  padding: 0 0 0 7px;
+  border-left: dotted 1px #0AA;
+}
+
+#documentation .prop {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 10px 0 3px 0;
+  color: #FF29EA;
+}
+
+#documentation .term {
+  font-size: 12px;
+  font-style: italic;
+  color: #FFF;
+  margin: 5px 0 4px 0;
+  max-width: 600px;
+}
+
+#documentation .options-title {
+  margin: 2px 0;
+  color: #FFAA03;
+}
+
+#documentation .component-options {
+  display: block;
+  font-size: 12px;
+  color: #56FFFF;
+  margin: 0 0 0 5px;
+  padding: 0 0 0 5px;
+  border-left: dotted 1px #FFAA03;
+}
+#documentation .component-option {
+  margin: 0 0 0 10px;
+}
+
+#documentation .prop-type {
+  font-style: italic;
+  color: #06AED5;
+  font-size: 14px;
+}
+
+#documentation .objectprops {
+  margin: 5px 0 0 15px;
+}

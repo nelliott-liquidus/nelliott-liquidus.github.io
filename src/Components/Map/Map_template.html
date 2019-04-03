@@ -1,0 +1,210 @@
+<style type="text/css">
+  #<%= domID %>mapfull {
+    position: absolute;
+    width: <%= options.width %>px;
+    height: <%= options.height %>px;
+    display:none;
+    pointer-events:none;
+    background-color: #FFF;
+  }
+  #<%= domID %>mapContainer{
+    position: absolute;
+    width: <%= options.mapWidth %>px;
+    height: <%= options.mapHeight %>px;
+    background-color: #F00;
+  }
+  #<%= domID %>mapbtncontainer {
+    pointer-events: auto;
+  }
+  #<%= domID %>mapbtn,   #<%= domID %>storeIcon {
+    display: inline-block;
+    cursor: pointer;
+    color: #FFF;
+    position: absolute;
+    left: <%= options.mapPinX %>px;
+    top: <%= options.mapPinY %>px;
+  }
+  #<%= domID %>mapText,   #<%= domID %>storeAddress{
+    position: absolute;
+    font-family: <%= options.mapTextFont %>;
+    font-weight: <%= options.mapTextWeight %>;
+    font-size: <%= options.mapTextSize %>px;
+    color: <%= options.mapTextColor %>;
+    left: <%= options.mapPinX + 18 %>px;
+    top: <%= options.mapPinY %>px;
+    cursor: pointer;
+  }
+  #<%= domID %>mapText2, #<%= domID %>storeAddress2{
+    position: absolute;
+    font-family: <%= options.mapTextFont %>;
+    font-weight: <%= options.mapTextWeight %>;
+    font-size: <%= options.mapTextSize %>px;
+    color: <%= options.mapTextColor %>;
+    left: <%= options.mapPinX  + 18 %>px;
+    top: <%= options.mapPinY + 12 %>px;
+    cursor: pointer;
+  }
+
+  #<%= domID %>close {
+    position: absolute;
+    cursor: pointer;
+    top: 10px;
+    left: <%= options.mapWidth - 30 %>px;
+  }
+  #<%= domID %>map {
+    height: 100%;
+  }
+</style>
+
+<div id="<%= domID %>mapbtncontainer">
+  <img id="<%= domID %>mapbtn" src="<%= options.mapPinImage %>" onclick="<%= domID %>loadStores();" />
+  <span id="<%= domID %>mapText" onclick="<%= domID %>loadStores();"></span>
+  <span id="<%= domID %>mapText2" onclick="<%= domID %>loadStores();"></span>
+</div>
+<div id="<%= domID %>mapfull">
+  <div id="<%= domID %>mapContainer" ></div>
+  <img id="<%= domID %>close" src="<%= options.closeButtonImage %>" onclick="<%= domID %>closeMap();" />
+
+  <img id="<%= domID %>storeIcon" src="<%= options.mapPinImage %>"/>
+  <span id="<%= domID %>storeName" ></span>
+  <span id="<%= domID %>storeAddress" ></span>
+  <span id="<%= domID %>storeAddress2"></span>
+
+  <div id="<%= domID %>map"></div>
+</div>
+
+<script type="text/javascript">
+  <%= domID %>CI.init = function() {
+    $('#<%= domID %>').css('pointer-events', 'none');
+  }
+  var <%= domID %>currentNapi = "<%= options.napiListingsCall %>";
+	var <%= domID %>retailStringCount = <%= domID %>currentNapi.indexOf("retail/");
+  <%= domID %>retailStringCount += 7;
+  var <%= domID %>napiStr1 = <%= domID %>currentNapi.substr(<%= domID %>retailStringCount);
+  var <%= domID %>slashCount = <%= domID %>napiStr1.indexOf("/");
+  /* got the CampaignId */
+  var <%= domID %>CampaignId = <%= domID %>napiStr1.substr(0, <%= domID %>slashCount);
+
+  $.getJSON("https://api.cofactordigital.com/retail/" + <%= domID %>CampaignId + "/postalcodes.json?limit=1", function (d) {
+    if (<%= domID %>currentNapi.indexOf('postalcode=') !== -1)
+    {
+      <%= domID %>currentZipcode = <%= B.domID %>NAPI.options.postalode;
+      var <%= domID %>napiCallPostalCode = <%= domID %>currentNapi.match(/postalcode=(.*?)(&|$)/)[1];
+      <%= domID %>currentNapi = <%= domID %>currentNapi.replace(<%= domID %>napiCallPostalCode, <%= B.domID %>NAPI.options.postalcode);
+      <%= domID %>processListingData(<%= domID %>currentNapi);
+    }
+  });
+  function <%= domID %>loadStores()
+  {
+
+    <%= B.domID %>Banner.bannerEvent({
+        eventName: 'addressShown'
+    });
+
+    <%= B.domID %>Banner.paused = true;
+    $('#<%= domID %>').css('zIndex', '999');
+    $('#<%= domID %>mapfull').css('pointer-events', 'auto');
+    $.getJSON("https://api.cofactordigital.com/retail/" + <%= domID %>CampaignId + "/stores.json?postalcode=" + <%= domID %>currentZipcode + "&limit=5", function (d)
+    {
+        console.log('Stores: ', d);
+        <%= domID %>processMapData(d);
+    });
+  }
+  function <%= domID %>processMapData(_d)
+  {
+    var storeList = <%= B.domID %>NAPI.stores;
+
+    if(storeList.length ==0)
+  	{
+  		/* sonething wen wrong, no stores! */
+  	}
+  	else
+  	{
+  		var map;
+		    var myOptions = {
+		        zoom: 12,
+		        center: new google.maps.LatLng(storeList[0].location.coordinates[1], storeList[0].location.coordinates[0]),
+		        mapTypeId: 'terrain'
+		    };
+		    map = new google.maps.Map(<%= domID %>mapContainer, myOptions);
+		    var infoWindow = new google.maps.InfoWindow();
+
+		    for (var i = 0; i < storeList.length; i++)
+		    {
+		        var latlng = new google.maps.LatLng(storeList[i].location.coordinates[1], storeList[i].location.coordinates[0]);
+		        var mark = new google.maps.Marker({
+		            position: latlng,
+		            map: map
+		        });
+		        /*update address on click*/
+		        var line2Text = storeList[i].address.city.toUpperCase() + ", " + storeList[i].address.state.toUpperCase() + " " + storeList[i].address.postalCode;
+
+		        mark.addListener('click', (function (b, c, d, e, f, g, h, i, j, k) { return function () { <%= domID %>storeUpdated(b, c, d, e, f, g, h, i, j, k); } })(map, mark, infoWindow, <%= domID %>storeAddress, storeList[i].address.line1.toUpperCase(), <%= domID %>storeAddress2, line2Text, <%= domID %>storeName, storeList[i].pretailer.name, storeList[i].id));
+		    }
+
+        $('#<%= domID %>mapfull').css('display', 'block');
+
+  	}
+  }
+
+  function <%= domID %>storeUpdated(_map, _marker, _window, _txt, _val, _txt2, _val2, _txt3, _val3, _id)
+  {
+        _txt.innerHTML = _val;
+        _txt2.innerHTML = _val2;
+        _txt3.innerHTML = _val3;
+
+        _window.setContent("<strong>" + _val3.toUpperCase() + "</strong><br/>" + _val + "<br/>" + _val2);
+        _window.open(_map, _marker);
+        <%= B.domID %>NAPI.changeStore(_id);
+        /* var thisOBJ = this;
+
+          $.getJSON(this.napiAPI + this.CampaignId + "/listings.json?storeid=" + _id + "&returnmode=full" + this.EndCall, function (d) {
+          thisOBJ.processData(d);
+        }); */
+
+  }
+  function <%= domID %>processListingData(currentNapi)
+  {
+    $.getJSON(currentNapi, function (_d) {
+
+      if (_d.results.length == 0)
+      {
+      /* this.showFallBack(); */
+      }
+      else
+      {
+        for (var i = 0; i < _d.results.length; i++)
+        {
+
+          <%= domID %>storeAddress.innerHTML = <%= domID %>mapText.innerHTML = <%= B.domID %>NAPI.currentStore.address.line1.toUpperCase();
+          var line2Text = <%= B.domID %>NAPI.currentStore.address.city + ", " + <%= B.domID %>NAPI.currentStore.address.state + " " + <%= B.domID %>NAPI.currentStore.address.postalCode;
+          <%= domID %>storeAddress2.innerHTML = <%= domID %>mapText2.innerHTML = line2Text.toUpperCase();
+          /*
+          <%= domID %>storeAddress.innerHTML = <%= domID %>mapText.innerHTML = _d.results[0].store.address.line1.toUpperCase();
+          var line2Text = _d.results[0].store.address.city + ", " + _d.results[0].store.address.state + " " + _d.results[0].store.address.postalCode;
+          <%= domID %>storeAddress2.innerHTML = <%= domID %>mapText2.innerHTML = line2Text.toUpperCase();
+          */
+        }
+      }
+
+    });
+  }
+
+  var <%= domID %>hasMap = false;
+  var oldZ = '<%= (options.stateID + 1) * 10 %><%= options.id %>';
+  function <%= domID %>initMap() {
+    <%= domID %>map = new google.maps.Map(document.getElementById('<%= domID %>map'), {
+      center: {lat: -34.397, lng: 150.644},
+      zoom: 8
+    });
+  }
+
+  function <%= domID %>closeMap() {
+    // close map
+    <%= B.domID %>Banner.paused = false;
+    $('#<%= domID %>').css('zIndex', oldZ);
+    $('#<%= domID %>mapfull').css('display', 'none');
+    $('#<%= domID %>mapfull').css('pointer-events', 'none');
+  }
+
+</script>

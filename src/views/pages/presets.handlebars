@@ -1,0 +1,59 @@
+<div>
+  <h2>Presets</h2>
+  <div id="banner-filters">
+    <h3>Filters</h3>
+    <div class="panel" style="display:inline-block; min-width: 200px;min-height: 150px;">
+      <h3>Dimensions</h3>
+      {{#each sizes}}
+        <div class="filter-checkbox"><input data-attr="data-size" value="{{this}}" type="checkbox" /> {{this}}</div>
+      {{/each}}
+    </div>
+    <div class="panel" style="display:inline-block;min-width: 200px;min-height: 150px;">
+      <h3>Expandable</h3>
+      <div class="filter-checkbox"><input data-attr="data-expandable" value="true" type="checkbox" /> Expandable</div>
+      <div class="filter-checkbox"><input data-attr="data-expandable" value="" type="checkbox" /> Non-Expandable</div>
+    </div>
+  </div>
+  <div>
+    {{#each presets}}
+      {{> presetblock this}}
+    {{/each}}
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(function() {
+    $('.bannerlist-item').click(function(e){
+      window.location.replace($(e.currentTarget).attr('link'))
+    });
+    var filters = {
+      "data-size": [],
+      "data-expandable": []
+    };
+    $('.filter-checkbox input').change(function(e){
+      var el = $(e.currentTarget);
+      var attr = el.attr('data-attr');
+      var val = el.val();
+
+      if(el.prop('checked')) {
+        filters[attr].push(val);
+      }
+      else if(filters[attr].indexOf(val) >= 0){
+        filters[attr].splice(filters[attr].indexOf(val), 1);
+      }
+
+      $('.bannerlist-item').hide();
+      var numFilters = 0;
+      for(var k in filters){
+        for(var i = 0; i < filters[k].length; i++){
+          numFilters++;
+          $('.bannerlist-item[' + k + '="' + filters[k][i] + '"]').show();
+        }
+      }
+      if(numFilters == 0){
+        $('.bannerlist-item').show();
+      }
+
+    })
+  });
+</script>

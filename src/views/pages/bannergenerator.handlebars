@@ -1,0 +1,191 @@
+<link href="/public/assets/css/bannergenerator.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+iframe {
+  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  margin: 0;
+  padding: 0;
+  width:{{ B.options.width }}px;
+  height:{{ B.options.height }}px;
+
+}
+.rendered-banner {
+  width:{{ B.options.width }}px;
+  height:{{ B.options.height }}px;
+  overflow: hidden;
+  border: solid 1px #333;
+  margin: 0 20px 0 0;
+}
+
+.preview-wrapper {
+  display: block;
+}
+</style>
+<div id="banner-page">
+  <div id="banner-header">
+    <h2>'{{ B.options.width }} &times; {{ B.options.height }} {{ B.options.name }}' has been processed.</h2>
+    <div id="save-stats">
+      <span class="combined-size"><i class="savedcheck far fa-check-square"></i><b>SAVED {{ totalSize }}K</b></span><br /><br />
+      {{ path }} ({{ bannerSize }}K)<br />
+      {{ bonusPath }} ({{ bonusSize }}K)<br /><br />
+      <a target="_blank" href="/public/build/banner_{{ get B 'id' }}.json" class="green-btn">VIEW RAW JSON</a>
+      <div id="tag-output">
+<xmp>
+<script type="text/javascript">
+  var liqBanner = {
+    bannerID: '{{get B 'id'}}',
+    tag: {
+      id: {{get B 'id_counter'}},
+      tagName: 'tagname',
+    },
+    cacheBuster: '',
+    expandDirection: 7,
+    clickTags: [
+      {
+        type: 'lotame',
+        url: 'https://bcp.crwdcntrl.net/5/c=10676/b=51792423?',
+      },
+      {
+        type: 'lotame',
+        url: 'https://bcp.crwdcntrl.net?',
+      }
+    ],
+    mediaMacro: 'PREVIEW'
+  };
+</script>
+<script type="text/javascript" src="/public/js/wombat.js" ></script>
+</xmp>
+        <div id="copytagbtn" class="green-btn">COPY TAG</div><span id="copied-tag">Copied!</span>
+      </div>
+    </div>
+    <br />
+    <div class="created">created {{ getMongoTimestamp B.options._id }}</div>
+  </div>
+    <label for="expanddirection">Expand Direction: </label>
+    <select id="expanddirection">
+      <option value="7">7: None</option>
+      <option value="0">0: Left</option>
+      <option value="1">1: Right</option>
+      <option value="2">2: Toward Center</option>
+      <option value="3">3: Away from Center</option>
+    </select>
+    <div id="expandcontrols">
+      <label style="display:none;" for="expanddirection">Expand Direction: </label>
+      <select style="display:none;" id="expanddirection">
+        <option value="7">7: None</option>
+        <option value="0">0: Left</option>
+        <option value="1">1: Right</option>
+        <option value="2">2: Toward Center</option>
+        <option value="3">3: Away from Center</option>
+      </select>
+      <br />
+      Shift banner <span class="switchsides" id="moveleft">Left</span> or <span class="switchsides" id="moveright">Right</span>
+    </div>
+    <div class="preview-wrapper">
+      <div id="wombatwrapper" class="rendered-banner">
+        <script type="text/javascript">
+          var liqBanner = {
+            bannerID: '{{get B 'id'}}',
+            tag: {
+              id: {{get B 'id_counter'}},
+              tagName: 'tagname',
+            },
+            cacheBuster: '',
+            expandDirection: 7,
+            clickTags: [
+            ],
+            mediaMacro: 'PREVIEW'
+          };
+        </script>
+        <script type="text/javascript" src="/public/js/wombat.js" ></script>
+      </div>
+    </div>
+    <div class="clearfix" style="clear: both; display: none;"></div>
+
+    <br />
+    <div><a href="/editor/{{ get B 'id' }}" class="green-btn">EDIT</a></div>
+    <br />
+    <div id="tracking-log-container">
+      <h3>Tracking Event Log</h3>
+      <div id="eventlog">
+      </div>
+    </div>
+
+  <div id="banner-report">
+    <h3>States</h3>
+
+    {{#each B.options.states}}
+      <div class="state-list">{{ this.name }}</div>
+        {{#each this.components}}
+          <div class="component">{{ this.name }}
+            <div class="options">
+              {{#each this.options}}
+                <div class="option">{{@key}}: <span class="optionvalue">{{this}}</span></div>
+              {{/each}}
+            </div>
+          </div>
+        {{/each}}
+    {{/each}}
+  </div>
+</div>
+<script type="text/javascript">
+  $(function() {
+    $('#moveright').click(function(e){
+      $('.rendered-banner').css('float', 'right');
+      $('.rendered-banner').html('');
+      $('.clearfix').css('display', 'block');
+      liq_{{ get B 'id' }}_mainBanner.destroy();
+      LiquidTemplate.WriteAd();
+    });
+    $('#moveleft').click(function(e){
+      $('.rendered-banner').css('float', '');
+      $('.rendered-banner').html('');
+      $('.clearfix').css('display', 'none');
+      liq_{{ get B 'id' }}_mainBanner.destroy();
+      LiquidTemplate.WriteAd();
+    });
+    $('#copytagbtn').click(function(e){
+      $('#copytagbtn').css('pointer-events', 'none');
+      var el = document.createElement('textarea');
+      el.value = $('#tag-output > xmp')[0].innerHTML;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      $('#copied-tag').animate({
+        opacity: 1,
+        top: 0
+      }, 300);
+      setTimeout(function() {
+        $('#copied-tag').animate({
+          opacity: 0,
+          top: '-10px'
+        }, 3000, function(){
+          $('#copied-tag').animate({
+            top: '10px'
+          }, 1);
+          $('#copytagbtn').css('pointer-events', 'all');
+        });
+      }, 700)
+    })
+    document.addEventListener('expand', function(e) {
+      $('#wombatwrapper').css('width', {{get B 'width'}});
+    });
+    document.addEventListener('track', function(e){
+      $('#eventlog').prepend('<div class="trackinglog"><span class="logtime">[' + new Date().toLocaleTimeString() + '] </span><span class="servicename">' + e.detail.service + '</span> &gt;&gt; ' + e.detail.track_url + '</div>');
+    })
+    $('.component').click(function(e) {
+      $(e.currentTarget).find('.options').toggle();
+    });
+    $('#expanddirection').change(function(e) {
+      liqBanner.expandDirection = $(e.currentTarget).val();
+      //clear all timers
+      var id = window.setTimeout(function() {}, 0);
+      while (id--) {
+          window.clearTimeout(id);
+      }
+      LiquidTemplate.WriteAd();
+    });
+  });
+</script>

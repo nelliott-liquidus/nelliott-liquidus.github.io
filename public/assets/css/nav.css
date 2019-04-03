@@ -1,0 +1,39 @@
+#nav {
+  vertical-align: -50px;
+  padding: 0 0 0px 0;
+  margin: 0 0 10px 0;
+  display:inline-block;
+}
+
+#nav ul {
+  margin: 0 0 0 -6px;
+  display: inline-block;
+}
+#nav ul li {
+  display: inline-block;
+  list-style: none;
+  color: #FFDF00;
+  font-size: 1em;
+  padding: 3px 10px;
+  border-right: dotted 1px #0FF;
+
+}
+
+#nav ul li:last-child {
+  border-right: none;
+}
+
+#nav ul li a {
+  color: #FFDF00;
+  text-decoration: none;
+}
+
+#nav ul li a:hover {
+  text-decoration: underline;
+}
+
+#separator {  width: 100%;
+
+  margin: 0 0 10px 0;
+  border-bottom: dotted 1px #0FF;
+}

@@ -1,0 +1,51 @@
+<link href="/public/assets/css/documentation.css" rel="stylesheet" type="text/css">
+<div>
+  <h2>Documentation</h2>
+  <div id="documentation">
+    {{#each components}}
+      <div class="item">
+        <div class="title">{{this.name}}</div>
+        <div class="props">
+          {{#each this.editableParameters}}
+            <div class="prop">[ {{ @key }} ] <span class="prop-type">{{this.type}}</span></div>
+            <div class="term">{{getTerm @key}}</div>
+            {{#if this.props}}
+              <div class="objectprops">
+                {{#each this.props}}
+                  <div class="prop">[ {{ @key }} ] <span class="prop-type">{{this.type}}</span></div>
+                  <div class="term">{{getTerm @key}}</div>
+                  {{#if this.options}}
+                    <div class="component-options">
+                      <div class="options-title">Options</div>
+                      {{#each this.options}}
+                        <div class="component-option">{{this}}</div>
+                      {{/each}}
+                    </div>
+                  {{/if}}
+                {{/each}}
+              </div>
+            {{/if}}
+            {{#if this.options}}
+              <div class="component-options">
+                <div class="options-title">Options</div>
+                {{#each this.options}}
+                  <div class="component-option">{{this}}</div>
+                {{/each}}
+              </div>
+            {{/if}}
+          {{/each}}
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>
+
+<script type="text/javascript">
+
+$(function() {
+  $('#documentation .title').click(function(e) {
+    $(e.currentTarget).parent().find('.props').toggle();
+  })
+})
+
+</script>

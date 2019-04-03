@@ -1,0 +1,195 @@
+#banner-editor .inputgroup {
+  display: inline-block;
+}
+
+#banner-dimensions {
+  margin: 0 0 10px 0;
+}
+#state-list {
+  display:flex;
+
+  padding: 0 0 20px 0;
+  border-bottom: solid 1px #055;
+}
+#banner-states {
+  
+}
+.state-item{
+  border: solid 2px;
+  border-radius: 7px;
+  border-color: #A2EF07;
+  display: inline-block;
+  width: 100px;
+  height: 60px;
+  margin: 0 5px 0 0;
+  text-align: center;
+  vertical-align: middle;
+  color: #A2EF07;
+
+  word-wrap: break-word;
+  cursor: pointer;
+  padding: 40px 5px 5px 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+#newstate{
+  background-color: #A2EF07;
+  display: inline-block;
+  width: 100px;
+  height: 70px;
+  margin: 0 10px 0 0;
+  text-align: center;
+  font-size: 40px;
+  vertical-align: middle;
+  color: #FFF;
+
+  word-wrap: break-word;
+  cursor: pointer;
+  padding: 30px 5px 5px 5px;
+  font-weight: bold;
+}
+
+#state-components .inputpair, #state-quicksettings .inputpair {
+  display: inline-block !important;
+  margin: 5px;
+  padding: 5px;
+}
+
+.inputgroup label {
+  color: #A2EF07;
+}
+
+.state-chosen {
+  border-color: #06AED5;
+  color: #FFF;
+}
+
+.state-ghost {
+  opacity: .5;
+}
+
+.state-drag {
+  background-color: rgba(0, 35, 55, 50);
+  opacity: 1;
+}
+
+.selectedstate {
+  position: relative;
+  border-color: #06AED5;
+  color: #FFF;
+}
+.arrow {
+  position:absolute;
+  top: 86px;
+  left: 38px;
+  font-size: 52px;
+  color: #06AED5;
+
+  visibility: hidden;
+}
+
+.selectedstate > .arrow {
+  visibility: visible !important;
+}
+
+
+.form-editable {
+  display:none;
+}
+#all-components {
+  float:right;
+  color: #FFF;
+  text-align: right;
+
+}
+#services {
+  display: inline-block;
+}
+#services .component {
+  display:block;
+  padding:0;
+}
+.service {
+  display:inline-block;;
+  width: 250px;
+  vertical-align: top;
+
+}
+#banner-props{
+  display: inline-block;
+}
+
+.paramcontainer {
+  width: 100%;
+}
+
+#state-quicksettings {
+  margin: 20px 0 0 0;
+}
+
+#state-quicksettings input, #banner-props input{
+  width: 300px;
+}
+.dimensions input {
+  width: 50px !important;
+}
+#state-quicksettings .component-title {
+  font-size: 14px;
+  color: #A2EF07;
+}
+#state-components{
+  display: none;
+  color: #FFF;
+  margin: 20px 0 0 0;
+}
+
+#advanced-toggle {
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  padding: 8px;
+  position: relative;
+  top: -5px;
+  border-radius: 6px;
+  color: #FF0;
+  font-weight: bold;
+}
+
+.paramcontainer .component {
+  font-size: 24px;
+  padding: 0 0 5px 0;
+  margin: 10px 0;
+
+}
+
+.paramcontainer .component:hover {
+  color: #A2EF07;
+}
+
+.obj {
+  border-top: dotted 1px #550;
+  border-bottom: dotted 1px #550;
+  padding: 10px;
+  margin: 0 0 10px 0;
+}
+
+.obj:hover {
+  border-top: dotted 1px #FF0;
+  border-bottom: dotted 1px #FF0;
+}
+
+.obj input {
+  background-color: #330;
+  color: #FF0;
+}
+
+.obj label {
+  color: #FF0;
+}
+
+.obj h3 {
+  font-size: 24px;
+  text-transform:uppercase;
+  color: #FF0;
+  border-bottom: none;
+}
